@@ -1,6 +1,8 @@
 from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder
 import pandas as pd
 
+# We will not use this - But keeping this for the reference
+# Decided to use the pipeline instead of using this function individually on all categorical columns
 def encode_column_train_test(train_df, test_df, column_name, encoding_type, custom_order=None):
     """
     Encode a single column in both train and test sets.
@@ -43,3 +45,15 @@ def encode_column_train_test(train_df, test_df, column_name, encoding_type, cust
     test_encoded_df = pd.DataFrame(test_encoded, columns=col_names, index=test_df.index)
 
     return train_encoded_df, test_encoded_df
+
+def yes_no_transformer(data):
+    """
+    Convert the Yes and No to numeric values 1 and 0
+    
+    Args:
+        train_df (Column): column name to convert
+    
+    Returns:
+        Converted numerical column 
+    """
+    return data.replace({'Yes': 1, 'No': 0})
