@@ -58,6 +58,7 @@ def define_df_settings():
     """
     pd.set_option('display.max_columns', None)
     pd.set_option('display.max_colwidth', None)
+    pd.set_option('display.max_rows', 80)
 
 def display_plot(data, column, plot_type='hist', bins=30, xlabel=None, ylabel=None, title=None, title_orientation='None', sort=False):
     """
