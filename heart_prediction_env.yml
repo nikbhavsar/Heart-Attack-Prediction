@@ -96,9 +96,6 @@ dependencies:
   - icu=73.1=h313beb8_0
   - idna=3.4=py311hca03da5_0
   - imageio=2.31.4=py311hca03da5_0
-  - importlib-metadata=6.0.0=py311hca03da5_0
-  - importlib_metadata=6.0.0=hd3eb1b0_0
-  - importlib_resources=5.2.0=pyhd3eb1b0_1
   - ipykernel=6.25.0=py311hb6e6a13_0
   - ipython=8.12.2=py311hca03da5_0
   - ipython_genutils=0.2.0=pyhd3eb1b0_1

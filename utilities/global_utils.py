@@ -7,6 +7,35 @@ import matplotlib.pyplot as plt
 import seaborn as sns  
 import plotly.express as px
 
+# Common variable declaration
+
+feature_descriptions = {
+    "State": "State FIPS Code",
+    "Sex": "Sex of Respondent",
+    "GeneralHealth": "Would you say that in general your health is:",
+    "PhysicalActivities": "Did you participate in any physical activities or exercises in the past month?",
+    "SleepHours": "On average, how many hours of sleep do you get in a 24-hour period?",
+    "HadHeartAttack": "Ever told you had a heart attack (myocardial infarction)?",
+    "HadAngina": "Ever told you had angina or coronary heart disease?",
+    "HadStroke": "Ever told you had a stroke?",
+    "HadAsthma": "Ever told you had asthma?",
+    "HadSkinCancer": "Ever told you had skin cancer (not melanoma)?",
+    "HadCOPD": "Ever told you had COPD, emphysema, or chronic bronchitis?",
+    "HadDepressiveDisorder": "Ever told you had a depressive disorder (e.g., major depression, dysthymia)?",
+    "HadKidneyDisease": "Ever told you had kidney disease (excluding kidney stones, bladder infection, incontinence)?",
+    "HadArthritis": "Ever told you had arthritis, rheumatoid arthritis, gout, lupus, or fibromyalgia?",
+    "HadDiabetes": "Ever told you had diabetes?",
+    "SmokerStatus": "Four-level smoker status: Everyday smoker, Someday smoker, Former smoker, Non-smoker",
+    "ECigaretteUsage": "E-cigarette usage: Never used, currently using daily/some days, or used in the past but not currently",
+    "ChestScan": "Have you ever had a CT or CAT scan of your chest area?",
+    "RaceEthnicityCategory": "Five-level race/ethnicity category",
+    "AgeCategory": "Fourteen-level age category",
+    "HeightInMeters": "Reported height in meters",
+    "WeightInKilograms": "Reported weight in kilograms",
+    "BMI": "Body Mass Index (BMI)",
+    "AlcoholDrinkers": "Adults who reported having had at least one drink of alcohol in the past 30 days",
+}
+
 # Importing the data
 def import_csv(file_path):
     """
@@ -18,7 +47,7 @@ def import_csv(file_path):
     Returns:
         pd.DataFrame: DataFrame containing the CSV data.
     """
-    data = pd.read_csv(file_path)
+    data = pd.read_csv(file_path,index_col=None)
     return data
 
 def generate_data_dictionary(df, column_descriptions):
