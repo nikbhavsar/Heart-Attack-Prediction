@@ -48,7 +48,7 @@ levels, it can show if the user might need medical attention.
 | AlcoholDrinkers                | Alcohol consumption in past 30 days                                                                 | `object`      |
 | HighRiskLastYear               | High-risk behaviors in past year                                                                    | `object`      |
 
-## Project Workflow
+## 3. Project Workflow
 
 ### 1. Exploratory Data Analysis (EDA) and Data Cleaning
 - Visualized feature distributions and relationships using graphs and plots.
