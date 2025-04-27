@@ -47,3 +47,20 @@ levels, it can show if the user might need medical attention.
 | BMI                            | Calculated Body Mass Index                                                                          | `float64`     |
 | AlcoholDrinkers                | Alcohol consumption in past 30 days                                                                 | `object`      |
 | HighRiskLastYear               | High-risk behaviors in past year                                                                    | `object`      |
+
+## Project Workflow
+
+### 1. Exploratory Data Analysis (EDA) and Data Cleaning
+- Visualized feature distributions and relationships using graphs and plots.
+- Look into the dataset for inconsistencies and missing values.
+- Removed null values and handled outliers appropriately.
+
+### 2. Data Preprocessing
+- Encoded categorical variables using **OneHotEncoder** and **OrdinalEncoder**.
+- Scaled numerical variables to ensure consistent ranges across features.
+
+### 3. Hypothesis Testing
+- Conducted hypothesis testing to validate assumptions.
+
+### 4. Baseline Model
+- Built a **Logistic Regression** model as the baseline for initial performance evaluation.
