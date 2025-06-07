@@ -75,3 +75,23 @@ def train_and_tune_model(
         'roc_auc': roc,
         'pr_auc': pr_auc
     }
+
+# Function to get transformed feature names
+def get_feature_names_from_column_transformer(ct):
+    output_features = []
+
+    for name, transformer, columns in ct.transformers_:
+        if transformer == 'drop' or isinstance(transformer, str):
+            continue
+
+        if hasattr(transformer, 'get_feature_names_out'):
+            try:
+                names = transformer.get_feature_names_out(columns)
+            except:
+                names = columns
+        else:
+            names = columns
+
+        output_features.extend(names)
+
+    return output_features
