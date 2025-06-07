@@ -1,22 +1,20 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, jsonify
 import joblib
 import pandas as pd
 from flask_cors import CORS
 import sys
 import os
+
 sys.path.append(os.path.abspath('./utilities'))
 import pre_processing_utils
 import model_training_utils
 
-
-# Initialize the app
 app = Flask(__name__)
 CORS(app)
 
-# Load the trained model
-model = joblib.load("./models/random_forest_heart_attack_model.pkl")
+# Load the pipeline (preprocessor + model)
+model_pipeline = joblib.load('./models/random_forest_heart_attack_model.pkl')
 
-# Define features used (based on importance)
 used_features = [
     'HadAngina', 'ChestScan', 'AgeCategory', 'HadDiabetes', 'HadArthritis',
     'HadStroke', 'GeneralHealth', 'AlcoholDrinkers', 'HadCOPD', 'PhysicalActivities',
@@ -24,68 +22,72 @@ used_features = [
     'Sex', 'SleepHours', 'HeightInMeters', 'WeightInKilograms'
 ]
 
-# Map features to user-friendly labels
-feature_labels = {
-    'HadAngina': 'Had Angina?',
-    'ChestScan': 'Had Chest Scan?',
-    'AgeCategory': 'Age Category (e.g., 55-64)',
-    'HadDiabetes': 'Diagnosed with Diabetes?',
-    'HadArthritis': 'Diagnosed with Arthritis?',
-    'HadStroke': 'Previously had a Stroke?',
-    'GeneralHealth': 'General Health (e.g., Excellent, Fair)',
-    'AlcoholDrinkers': 'Consumes Alcohol?',
-    'HadCOPD': 'Has COPD?',
-    'PhysicalActivities': 'Physically Active?',
-    'SmokerStatus': 'Smoking Status (Never, Former, Current)',
-    'HadKidneyDisease': 'Diagnosed with Kidney Disease?',
-    'RaceEthnicityCategory': 'Race/Ethnicity (e.g., White, Hispanic, Other)',
-    'Sex': 'Sex (Male or Female)',
-    'SleepHours': 'Average Sleep Hours (per night)',
-    'HeightInMeters': 'Height (in meters)',
-    'WeightInKilograms': 'Weight (in kilograms)'
-}
+bool_cat_defaults = [
+    'HadAngina', 'ChestScan', 'HadDiabetes', 'HadArthritis', 'HadStroke',
+    'AlcoholDrinkers', 'HadCOPD', 'PhysicalActivities', 'HadKidneyDisease'
+]
+
+numeric_defaults = ['SleepHours', 'HeightInMeters', 'WeightInKilograms']
 
 @app.route("/", methods=["GET"])
 def home():
-    return render_template("./templates/index.html", used_features=used_features, feature_labels=feature_labels)
+    return render_template("index.html", used_features=used_features)
 
 @app.route("/predict", methods=["POST"])
 def predict():
     try:
-        data = request.form
-        input_data = {}
+        data = request.form.to_dict()
 
-        for feature in used_features:
-            val = data.get(feature)
-            if val is None:
-                raise ValueError(f"Missing input for: {feature}")
+        if not data:
+            return jsonify({"error": "No input data received"}), 400
 
-            # Convert feature types
-            if feature in ['HadAngina', 'HadDiabetes', 'HadArthritis', 'HadStroke', 'AlcoholDrinkers', 'HadCOPD', 'HadKidneyDisease', 'PhysicalActivities']:
-                input_data[feature] = val.lower() == 'yes'
-            elif feature in ['SleepHours', 'HeightInMeters', 'WeightInKilograms']:
-                input_data[feature] = float(val)
-            elif feature in ['Sex']:
-                input_data['Sex_Female'] = int(val == 'Female')
-                input_data['Sex_Male'] = int(val == 'Male')
-            elif feature == 'SmokerStatus':
-                input_data['SmokerStatus_Never smoked'] = int(val == 'Never')
-                input_data['SmokerStatus_Former smoker'] = int(val == 'Former')
-            elif feature == 'RaceEthnicityCategory':
-                input_data['RaceEthnicityCategory_White'] = int(val == 'White')
-                input_data['RaceEthnicityCategory_Hispanic'] = int(val == 'Hispanic')
-            else:
-                input_data[feature] = val
+        # Default State
+        if 'State' not in data or not data['State']:
+            data['State'] = 'Alabama'
 
-        df = pd.DataFrame([input_data])
-        prob = model.predict_proba(df)[0][1]
-        prediction = int(prob >= 0.35)
-        risk_level = "High Risk" if prediction == 1 else "Low Risk"
+        # Default booleans/categoricals to 'No'
+        for feature in bool_cat_defaults:
+            if feature not in data or not data[feature]:
+                data[feature] = 'No'
 
-        return render_template("./templates/index.html", result=risk_level, prob=round(prob * 100, 2), used_features=used_features, feature_labels=feature_labels)
+        # Default numerics to 0
+        for feature in numeric_defaults:
+            if feature not in data or not data[feature]:
+                data[feature] = 0
+
+        # Calculate BMI if possible
+        try:
+            height = float(data.get('HeightInMeters', 0))
+            weight = float(data.get('WeightInKilograms', 0))
+            data['BMI'] = round(weight / (height ** 2), 2) if height > 0 else 0
+        except:
+            data['BMI'] = 0
+
+        all_features = used_features + ['State', 'BMI']
+        input_dict = {f: data.get(f, None) for f in all_features}
+        input_df = pd.DataFrame([input_dict])
+
+        prob = model_pipeline.predict_proba(input_df)[0][1]
+        # Assign risk category
+        if prob < 0.30:
+            risk_level = "Low Risk"
+            message = "Great job! Keep maintaining your healthy habits."
+        elif prob < 0.45:
+            risk_level = "Moderate Risk"
+            message = "Consider reviewing your health habits. Regular checkups can help."
+        else:
+            risk_level = "High Risk"
+            message = "Consult your healthcare provider for professional advice."
+
+        return jsonify({
+            "risk": risk_level,
+            "probability": round(prob * 100, 2),
+            "message": message
+        })
 
     except Exception as e:
-        return f"Error: {str(e)}"
+        print("Error during prediction:", str(e))
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
     app.run(debug=True)
