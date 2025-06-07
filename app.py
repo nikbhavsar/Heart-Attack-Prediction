@@ -2,6 +2,9 @@ from flask import Flask, request, render_template
 import joblib
 import pandas as pd
 from flask_cors import CORS
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 
 # Initialize the app
 app = Flask(__name__)
