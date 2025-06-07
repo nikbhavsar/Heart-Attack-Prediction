@@ -1,7 +1,7 @@
 Flask
 gunicorn
 numpy
-imblearn
+imbalanced-learn
 matplotlib
 flask-cors
 pandas
