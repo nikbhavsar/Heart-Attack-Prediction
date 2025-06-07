@@ -1,4 +1,8 @@
 Flask
+gunicorn
+numpy
+imblearn
+matplotlib
 flask-cors
 pandas
 scikit-learn
