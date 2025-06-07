@@ -4,7 +4,11 @@ import pandas as pd
 from flask_cors import CORS
 import sys
 import os
-sys.path.append(os.path.abspath(os.path.dirname(__file__)))
+sys.path.append(os.path.abspath('../utilities'))
+import global_utils
+import pre_processing_utils
+import model_training_utils
+
 
 # Initialize the app
 app = Flask(__name__)
