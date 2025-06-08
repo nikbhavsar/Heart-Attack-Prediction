@@ -6,17 +6,17 @@ Author: Nikhar Bhavsar
 **Dataset link:** https://www.kaggle.com/datasets/kamilpytlak/personal-key-indicators-of-heart-disease
 
 ## 1. Project Overview
-## Problem Area
+### Problem Area
 
-### The Growing Crisis of Heart Disease
+#### The Growing Crisis of Heart Disease
 Heart disease is a leading cause of death in Canada, yet **1 in 3 cases go undiagnosed** until severe symptoms emerge. Delayed detection often leads to irreversible damage, increased healthcare costs, and preventable fatalities. With **14 Canadian adults dying every hour** from heart disease (CCDSS 2017–2018), early risk assessment is critical.
 
-### Barriers to Care
+#### Barriers to Care
 - **Doctor shortages**: 4.7 million Canadians lack a family physician ([2023 Statistics Canada](https://www.statcan.gc.ca)).
 - **Limited awareness**: Many dismiss early warning signs like high blood pressure or cholesterol.
 - **Testing gaps**: Rural/remote communities often lack diagnostic facilities.
 
-## Proposed Data Science Solution
+### Proposed Data Science Solution
 Machine learning can look for patterns in health data and predict if someone is at risk of heart disease. For example, based on data like high glucose or cholesterol
 levels, it can show if the user might need medical attention.
 
@@ -64,3 +64,58 @@ levels, it can show if the user might need medical attention.
 
 ### 4. Baseline Model
 - Built a **Logistic Regression** model as the baseline for initial performance evaluation.
+
+### 5. Model Development & Imbalance Handling
+- Resampled the data using:
+  - **SMOTEENN**
+  - **SMOTENearestNeighbors**
+- Tuned hyperparameters using **GridSearchCV** on:
+  - Random Forest
+  - Logistic Regression
+  - XGBoost
+  - LightGBM
+- Compared models using:
+  - Recall
+  - F1 Score
+  - Precision
+  - ROC AUC / PR AUC
+
+### 6. Final Model Training
+- Selected **Random Forest** as the final model.
+- Trained on the full data using optimal parameters.
+- Saved model and feature importance:
+  - `random_forest_heart_attack_model.pkl`
+  - `feature_importance.csv`
+
+### 7. Web App Deployment
+- Built a web app with **Flask**
+- Hosted at:  
+  🔗 [https://predict-heart-attack-risk.onrender.com/](https://predict-heart-attack-risk.onrender.com/)
+- Allows users to input key health indicators and receive risk level prediction: **Low**, **Moderate**, or **High**
+
+---
+
+## 4. Model Performance
+
+| Metric            | Value      |
+|-------------------|------------|
+| Accuracy          | 85.9%      |
+| Recall (Positive) | 70.5%      |
+| Precision         | 23.6%      |
+| F1 Score          | 0.354      |
+| ROC AUC           | 0.879      |
+| PR AUC            | 0.387      |
+
+---
+
+## 5. Outputs
+
+- `random_forest_heart_attack_model.pkl` — Final model file
+- `feature_importance.csv` — Top contributing features
+- Precision-Recall Curve — Visual comparison of models
+- Full classification report (see Notebook 6)
+
+## 6. Limitations
+
+- **Low Precision**: Although recall is high (to reduce false negatives), precision remains relatively low, which can lead to false alarms in a real-world scenario.
+- **Imbalanced Dataset**: Despite using resampling techniques, the original class imbalance (~5% positive class) still limits precision and stability.
