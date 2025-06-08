@@ -12,7 +12,7 @@ import model_training_utils
 app = Flask(__name__)
 CORS(app)
 
-# Load the pipeline (preprocessor + model)
+# Load the pipeline
 model_pipeline = joblib.load('./models/random_forest_heart_attack_model.pkl')
 
 used_features = [
@@ -84,6 +84,7 @@ def predict():
             "probability": round(prob * 100, 2),
             "message": message
         })
+        print(prob)
 
     except Exception as e:
         print("Error during prediction:", str(e))
